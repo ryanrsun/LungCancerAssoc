@@ -7,9 +7,9 @@
 #'
 #' @param gene_tab A data frame that has columns Gene, CHR, BP for the annotation corresponding
 #' to the genotype data.
-#' @param gene_tab_fname The file name of a table that holds the data in gene_tab. Should have
-#' the column names Gene, CHR, Start, End. You only need to specify EITHER gene_tab OR gene_tab_fname.
 #' @param pathway_genes A vector with the name of all the genes in the pathway of interest.
+#' @param gene_sig_tab A table holding the p-value of each gene. Should only have the columns 'Gene' and 'P_value'.
+#' If specified, then the returned pathway_info will be sorted in increasing order of p_value. If null, then no sorting.
 #' @param checkpoint A boolean variable - TRUE if you want this function to print some diagnostic messages.
 #'
 #' @return A data frame containing columns for Gene, CHR, Start, End for all genes in your pathawy.
@@ -21,7 +21,7 @@
 #' new_gene_tab <- data.frame(Gene=paste('Gene', 1:5, sep=''), CHR=1, Start=1:5, End=10:15)
 #' define_gene_location(gene_tab=new_gene_tab, pathway_genes=c('Gene1', 'Gene2'), checkpoint=FALSE)
 
-define_pathway_loc <- function(gene_tab, pathway_genes, checkpoint) {
+define_pathway_loc <- function(gene_tab, pathway_genes, gene_sig_tab=NULL, checkpoint) {
 
     # Do we even have any genes?
     na_cells <- which(is.na(pathway_genes) | pathway_genes == '')
@@ -67,6 +67,18 @@ define_pathway_loc <- function(gene_tab, pathway_genes, checkpoint) {
         pathway_info <- pathway_info[-missing_rows, ]
     } else {
         missing_genes <- ''
+    }
+
+    # If gene significance table supplied, order the genes by increasing p_value
+    if (!is.null(gene_sig_tab)) {
+        pathway_info <- merge(x=pathway_info, y=gene_sig_tab, by='Gene', all.x=TRUE)
+        NA_pvalues <- which(is.na(pathway_info$P_value))
+        if (length(NA_pvalues) > 0) {
+            pathway_info$P_value[NA_pvalues] <- 1
+        }
+
+        # Order
+        pathway_info <- pathway_info[order(pathway_info$P_value, decreasing=FALSE), ]
     }
 
     # Diagnostic information
