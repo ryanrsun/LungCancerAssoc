@@ -21,7 +21,12 @@
 #' column headings 'Subject', 'EV1', 'EV2', and so on.
 #' @param evecs_tab_fname The name of a file formatted in the manner described by evecs_tab.
 #' You only need to specify either evecs_tab or evecs_tab_fname.
-#' @param num_PCs_use Number of PCs to use
+#' @param gene_sig_tab Data.frame with two columns - 'Gene' and 'P_value'. Holds the significance
+#' of each single gene.
+#' @param gene_sig_tab_fname The name of a file formatted in the manner described by gene_sig_tab.
+#' You only need to specify at most one of gene_sig_tab or gene_sig_tab_fname.  If you don't specify
+#' one, then the leave_k_out procedure will not return sensible results, but you may not need that function.
+#' @param num_PCs_use Number of PCs to use.
 #' @param pathways_per_job How many pathways to test in one call of the run_pathwayanal() function.
 #' Will only be used if you also specify aID to determine which part of the pathway_tab to use.
 #' @param gene_buffer A buffer region added to the Start and End of each gene region to capture,
@@ -58,7 +63,8 @@
 check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                          gene_tab=NULL, gene_tab_fname=NULL,
                          SS_file=NULL, SS_fname_root=NULL,
-                         evecs_tab=NULL, evecs_tab_fname=NULL, num_PCs_use,
+                         evecs_tab=NULL, evecs_tab_fname=NULL,
+                         gene_sig_tab=NULL, gene_sig_tab_fname=NULL, num_PCs_use,
                          pathways_per_job=10, gene_buffer=5000, threshold_1000G=0.03,
                          snp_limit=1000, hard_snp_limit=1500, prune_factor=0.5, prune_limit=0.0625,
                          prune_to_start=TRUE, run_GHC=FALSE, out_name_root='pathway_anal',
@@ -216,10 +222,30 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
         stop('SS_file must be a data.frame')
     }
 
+    # Check gene_sig_tab_fname
+    if (!is.null(gene_sig_tab_fname)) {
+        if (class(gene_sig_tab_fname) != 'character') {
+            stop('You have specified an invalid gene_sig_tab_fname name.')
+        } else {
+            gene_sig_tab <- tryCatch(data.table::fread(gene_sig_tab_fname, header=T),
+                                warning=function(w) w, error=function(e) e)
+            if (class(gene_sig_tab)[1] %in% c('simpleWarning', 'simpleError')) {
+                stop('Could not read gene_sig_tab.')
+            }
+        }
+    }
+
+    # Now check that gene_sig_tab has the correct columns
+    if (!is.null(gene_sig_tab)) {
+       if (ncol(gene_sig_tab) != 2 | colnames(gene_sig_tab) != c('Gene', 'P_value')) {
+           stop('gene_sig_tab should have exactly two columns, Gene and P_value')
+       }
+    }
+
     # Check output name
     if (class(out_name_root) != 'character') {
         stop('You have specified an invalid output name.')
     }
 
-    return(list(gene_tab=gene_tab, pathways_tab=pathways_tab, P_mat=P_mat))
+    return(list(gene_tab=gene_tab, pathways_tab=pathways_tab, P_mat=P_mat, gene_sig_tab=gene_sig_tab))
 }
