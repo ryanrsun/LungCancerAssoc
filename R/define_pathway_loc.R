@@ -34,9 +34,9 @@ define_pathway_loc <- function(gene_tab, pathway_genes, gene_sig_tab=NULL, check
 
     # Build the output table
     pathway_info <- data.frame(Gene=pathway_genes, CHR=NA, Start=NA, End=NA, Diff=NA)
-    for (gene_it in 1:nrow(gene_tab))
+    for (gene_it in 1:length(pathway_genes))
     {
-        gene_name <- as.character(pathway_info$Gene[gene_it])
+        gene_name <- as.character(pathway_genes[gene_it])
 
         # Find it
         gene_tab_row <- which(gene_tab$Gene == gene_name)
@@ -44,6 +44,17 @@ define_pathway_loc <- function(gene_tab, pathway_genes, gene_sig_tab=NULL, check
         # Can't find it? Leave NA
         if (length(gene_tab_row) == 0) {
             next
+        }
+
+        # Is it a duplicate?
+        if (length(gene_tab_row) > 1) {
+            primary_row <- which(gene_tab$Gene == gene_name & gene_tab$Notes == 1)
+            if (length(primary_row) == 1) {
+                gene_tab_row <- primary_row
+            } else {
+                gene_tab_row <- gene_tab_row[1]
+                if (checkpoint) {cat('Duplicate entries found for: ', gene_name, '\n')}
+            }
         }
 
         # Record
