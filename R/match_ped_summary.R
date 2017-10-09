@@ -24,16 +24,17 @@
 #' @export
 #'
 #' @examples
+#'
 
 match_ped_summary <- function(SS_fname_root, fname_root, ped_file, map_file, CHR, start_bp, end_bp, gene_name, threshold_1000G, checkpoint)
 {
 
     # Open summary stats file
     SS_fname <- paste(SS_fname_root, CHR, '.txt', sep='')
+
     # Got rid of the tryCatch here because we were getting some loss of accuracy messages,
     # so make sure these files all exist.
-    SS_file <- fread(SS_fname, header=T)
-
+    SS_file <- suppressWarnings(fread(SS_fname, header=T, showProgress=FALSE))
 
     # Do we have any summary statistics in our region?
     SS_rows <- which(SS_file$Chr==CHR & SS_file$BP>=start_bp & SS_file$BP<=end_bp)
