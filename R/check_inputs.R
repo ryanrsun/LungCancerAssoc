@@ -64,7 +64,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                          gene_tab=NULL, gene_tab_fname=NULL,
                          SS_file=NULL, SS_fname_root=NULL,
                          evecs_tab=NULL, evecs_tab_fname=NULL,
-                         gene_sig_tab=NULL, gene_sig_tab_fname=NULL, num_PCs_use,
+                         gene_sig_tab=NULL, gene_sig_tab_fname=NULL, num_PCs_use=5,
                          pathways_per_job=10, gene_buffer=5000, threshold_1000G=0.03,
                          snp_limit=1000, hard_snp_limit=1500, prune_factor=0.5, prune_limit=0.0625,
                          prune_to_start=TRUE, run_GHC=FALSE, out_name_root='pathway_anal',
@@ -118,20 +118,23 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
 
     # Make the projection matrix for correlation estimation
     # Use the fname only if an actual table not provided.
+    # If neither fname nor table provided, use the one in LungCancerAssoc/data
     if (is.null(evecs_tab) & is.null(evecs_tab_fname)) {
-        stop('Must provide eigenvectors from reference panel')
+        data(PCs_1000G_Euro)
+        evecs_tab <- PCs_1000G_Euro
     } else if (is.null(evecs_tab)) {
-        evecs_tab <- tryCatch(data.table::fread(evecs_tab_fname, skip=1L, header=F),
+        evecs_tab <- tryCatch(read.table(evecs_tab_fname, header=T),
                               warning=function(w) w, error=function(e) e)
         if (class(evecs_tab)[1] %in% c('simpleWarning', 'simpleError')) {
             stop('Problem opening eigenvectors table')
         }
     }
     # Sort the eigenvectors by ID
-    evecs_tab <- evecs_tab[order(evecs_tab[, 1, with=F], decreasing=FALSE), ]
+    evecs_tab <- evecs_tab[order(evecs_tab$ID, decreasing=FALSE), ]
 
     # Build the projection matrix
-    X_mat <- as.matrix(cbind(1, evecs_tab[, 2:(num_PCs_use+1), with=F]))
+    evec_cols_to_use <- paste('PC', 1:num_PCs_use, sep='')
+    X_mat <- as.matrix( subset(evecs_tab, select=evec_cols_to_use) )
     W_mat <- diag(x=1, nrow=nrow(evecs_tab), ncol=nrow(evecs_tab))
     P_mat <- tryCatch(W_mat - X_mat %*% solve(t(X_mat) %*% X_mat) %*% t(X_mat),
                       warning=function(w) w, error=function(e) e)
@@ -141,13 +144,17 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
 
     # Make sure we can open the pathways table.
     # Use the fname only if an actual table not provided.
-    if ( is.null(pathways_tab) & is.null(pathways_tab_fname)) {
-        stop('Must provide a list of pathways to test.')
-    } else if (is.null(pathways_tab)) {
-        pathways_tab <- tryCatch(data.table::fread(pathways_tab_fname, header=T),
+    # If neither fname nor table provided, load from data/ folder.
+    if ( is.null(pathways_tab) & is.null(pathways_tab_fname) ) {
+        data(bader_apr1_pathways)
+        pathways_tab <- bader_apr1_pathways
+    } else {
+        if (is.null(pathways_tab)) {
+            pathways_tab <- tryCatch(read.table(pathways_tab_fname, header=T),
                                  warning=function(w) w, error=function(e) e)
-        if (class(pathways_tab)[1] != 'data.frame') {
-            stop('Problem opening pathways list.')
+            if (class(pathways_tab)[1] != 'data.frame') {
+                stop('Problem opening pathways list.')
+            }
         }
     }
 
@@ -166,16 +173,22 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
         pathways_tab <- pathways_tab[start_row:end_row, ]
     }
 
-
     # Check a gene table provided.
     # Use the fname only if table not provided.
+    # If neither fname not table provided, use the one in LungCancerAssoc/data
     if (is.null(gene_tab) & is.null(gene_tab_fname)) {
-        stop('You must specify at least one of gene_tab or gene_tab_fname.')
-    } else if (is.null(gene_tab)) {
-        gene_tab <- tryCatch(data.table::fread(gene_tab_fname, header=T),
+        data(ensembl_hg19_oct17)
+        gene_tab <- ensembl_hg19_oct17
+        colnames(gene_tab) <- c('Ensembl_name', 'CHR', 'Strand', 'Start', 'End',
+                                'cdsStart', 'cdsEnd', 'num_exons', 'Gene', 'Notes')
+    } else {
+        if (is.null(gene_tab)) {
+            gene_tab <- tryCatch(data.table::fread(gene_tab_fname, header=T),
                             warning=function(w) w, error=function(e) e)
-        if (class(gene_tab)[1] != 'data.frame') {
-            stop('Problem opening gene table.')
+
+            if (class(gene_tab)[1] != 'data.frame') {
+                stop('Problem opening gene table.')
+            }
         }
     }
 
@@ -190,6 +203,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     gene_tab$End <- as.numeric(as.character(gene_tab$End))
 
     # Print out where FGFR2 is.
+    # Should be chr 10 123237844..123357972
     cat('Checking gene table for FGFR2... \n')
     FGFR2_row <- which(gene_tab$Gene == 'FGFR2')
     if (length(FGFR2_row) == 0) {
