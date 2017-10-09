@@ -55,7 +55,7 @@
 run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                             gene_tab=NULL, gene_tab_fname=NULL,
                             SS_file=NULL, SS_fname_root=NULL,
-                            evecs_tab=NULL, evecs_tab_fname=NULL, num_PCs_use,
+                            evecs_tab=NULL, evecs_tab_fname=NULL, num_PCs_use=5,
                             pathways_per_job=10, gene_buffer=5000, threshold_1000G=0.03,
                             prune_factor=0.5, prune_limit=0.0625, snp_limit=1000, hard_snp_limit=1500,
                             prune_to_start=TRUE, run_GHC=FALSE, out_name_root='pathway_anal',
@@ -79,7 +79,7 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
 
     # May not use GHC columns
     pathway_results <- data.frame(Pathway_name=pathways_tab$Pathway_name,
-                                  Pathway_description=pathways_tab$Pathway_name,
+                                  Pathway_description=pathways_tab$Pathway_description,
                                   num_snps=NA, num_pathway_genes=NA, num_genes_used=NA,
                                   prune_R2=NA, num_large_Z=NA, gbj=NA, GBJ_p=NA, GBJ_err=NA,
                                   ghc=NA, GHC_p=NA, GHC_err=NA)
@@ -94,12 +94,28 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
         # Diagnostics
         if (checkpoint) {
             cat('\n Starting pathway ', pathway_it, 'of ', nrow(pathways_tab), '\n')
-            cat('Pathway name is: ', pathways_tab$Pathway_name[pathway_it], '\n')
-            cat('Pathway description is: ', pathways_tab$Pathway_description[pathway_it], '\n')
+            cat('Pathway name is: ', as.character(pathways_tab$Pathway_name[pathway_it]), '\n')
+            cat('Pathway description is: ', as.character(pathways_tab$Pathway_description[pathway_it]), '\n')
         }
 
         # Find the locations of all our genes
-        path_genes <- unlist(pathways_tab[pathway_it, 3:ncol(pathways_tab), with=F])
+        # First have to remove NAs from each row, send in a cleaned gene vector
+        # Subset
+        subset_colnames <- paste('Gene', 1:(ncol(pathways_tab)-2), sep='')
+        subset_row <- rep(FALSE, nrow(pathways_tab)); subset_row[pathway_it] <- TRUE
+        path_genes <- subset(pathways_tab, subset=subset_row, select=subset_colnames)
+
+        # Clean
+        bad_elements <- which(is.na(path_genes) | path_genes=="")
+        if (length(bad_elements) == length(path_genes)) {
+            pathway_results$num_snps[pathway_it] <- 0
+            pathway_results$num_genes_used[pathway_it] <- 0
+            next
+        }
+        if (length(bad_elements) > 0) {path_genes <- path_genes[-bad_elements]}
+        path_genes <- unlist(path_genes)
+
+        # Get locations
         pathway_info <- define_pathway_loc(gene_tab=gene_tab, pathway_genes=path_genes,
                                            checkpoint=checkpoint)
 
