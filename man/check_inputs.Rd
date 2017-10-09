@@ -7,7 +7,7 @@
 check_inputs(pathways_tab = NULL, pathways_tab_fname = NULL,
   gene_tab = NULL, gene_tab_fname = NULL, SS_file = NULL,
   SS_fname_root = NULL, evecs_tab = NULL, evecs_tab_fname = NULL,
-  gene_sig_tab = NULL, gene_sig_tab_fname = NULL, num_PCs_use,
+  gene_sig_tab = NULL, gene_sig_tab_fname = NULL, num_PCs_use = 5,
   pathways_per_job = 10, gene_buffer = 5000, threshold_1000G = 0.03,
   snp_limit = 1000, hard_snp_limit = 1500, prune_factor = 0.5,
   prune_limit = 0.0625, prune_to_start = TRUE, run_GHC = FALSE,
