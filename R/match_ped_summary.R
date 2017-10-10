@@ -170,10 +170,12 @@ match_ped_summary <- function(SS_fname_root, fname_root, ped_file, map_file, CHR
     # Write the new ped file (for pruning)
     ped_fname <- paste(fname_root, '.ped', sep='')
     write.table(ped_file, ped_fname, append=F, quote=F, row.names=F, col.names=F)
+    system2(command='sleep', args=c(2))
 
     # Write the map file (for pruning)
     map_fname <- paste(fname_root, '.map', sep='')
     write.table(map_file, file=map_fname, append=F, quote=F, row.names=F, col.names=F)
+    system2(command='sleep', args=c(2))
 
     return (list(temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record))
 }
