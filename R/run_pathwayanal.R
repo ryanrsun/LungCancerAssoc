@@ -152,15 +152,19 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                 copy_from <- paste(refsnp_dir, '/', gene_name, '.ped', sep='')
                 copy_to <- paste(input_dir, '/', fname_root, '.ped', sep='')
                 cp_success <- system2(command='cp', args=c(copy_from, copy_to), wait=TRUE)
+
+                # Sometimes copying takes a while
+                system2(command='sleep', args=c(2))
+
                 # Not in one of reference panel or gene table
                 if (cp_success) {next}
                 copy_from <- paste(refsnp_dir, '/', gene_name, '.map', sep='')
                 copy_to <- paste(input_dir, '/', fname_root, '.map', sep='')
                 cp_success <- system2(command='cp', args=c(copy_from, copy_to), wait=TRUE)
-                if (cp_success) {next}
 
                 # Sometimes copying takes a while
                 system2(command='sleep', args=c(2))
+                if (cp_success) {next}
 
                 # Clean data
                 init_data_list <- clean_1000G_raw(fname_root=fname_root, gene_name=gene_name,
@@ -204,9 +208,9 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                 cat('Done with ', gene_name, ' ', gene_it, '/', nrow(pathway_info), '\n')
 
                 # Remove the queried files?
-                rm_dl_name <- paste(fname_root, '*', sep='')
+                rm_dl_name <- paste(fname_root, '.', c('ped', 'map'), sep='')
                 system2(command='rm', args=rm_dl_name)
-                system2(command='sleep', args=c(1))
+                system2(command='sleep', args=c(2))
             }
 
             ####################################################
