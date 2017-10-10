@@ -31,7 +31,7 @@ prune_snps <- function(Snum, aID, fname_root, prune_R2, temp_Gmat, temp_Gmat_rec
     # Get prune list in plink
     system2(command='./plink', args=c('--noweb', '--file', fname_root, '--indep-pairwise',
                                       20, 5, prune_R2, '--silent', '--out', prune_root), wait=T)
-    system2(command='sleep', args=c(1))
+    system2(command='sleep', args=c(3))
 
     # Read the list of SNPs to keep, prune
     snps_to_prune <- tryCatch(read.table(prune_out_name), warning=function(w) w,
@@ -68,9 +68,9 @@ prune_snps <- function(Snum, aID, fname_root, prune_R2, temp_Gmat, temp_Gmat_rec
     }
 
     #  Remove prune files
-    rm_prune_name <- paste('S', Snum, '_', aID, '*', sep='')
+    rm_prune_name <- paste('S', Snum, '_', aID, '.', c('log', 'nosex', 'prune.in', 'prune.out'), sep='')
     system2(command='rm', args=rm_prune_name)
-    system2(command='sleep', args=c(1))
+    system2(command='sleep', args=c(2))
 
     return (list(temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record))
 }
