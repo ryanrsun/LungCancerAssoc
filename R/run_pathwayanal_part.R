@@ -163,7 +163,8 @@ run_pathwayanal_part <- function(part=NULL, pathways_tab=NULL, pathways_tab_fnam
                 end_bp <- pathway_info$End[gene_it] + gene_buffer
 
                 # Move a copy of the gene to our working directory
-                fname_root <- paste('S', Snum, '_aID', aID, sep='')
+                # Change the file name for partial runs
+                fname_root <- paste('S', Snum, '_aID', aID, '_part', part, sep='')
                 copy_from <- paste(refsnp_dir, '/', gene_name, '.ped', sep='')
                 copy_to <- paste(input_dir, '/', fname_root, '.ped', sep='')
                 cp_success <- system2(command='cp', args=c(copy_from, copy_to), wait=TRUE)
@@ -205,7 +206,8 @@ run_pathwayanal_part <- function(part=NULL, pathways_tab=NULL, pathways_tab_fnam
                 temp_Gmat_record <- matched_data_list$temp_Gmat_record
 
                 # LD pruning in PLINK
-                pruned_list <- prune_snps(Snum=Snum, aID=aID, fname_root=fname_root, prune_R2=prune_R2,
+                # For partial jobs, need to give it the part variable!
+                pruned_list <- prune_snps(Snum=Snum, aID=aID, part=part, fname_root=fname_root, prune_R2=prune_R2,
                                           temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record,
                                           checkpoint=checkpoint)
                 # Append every gene's results
