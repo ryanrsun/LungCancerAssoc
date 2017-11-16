@@ -2,7 +2,7 @@
 
 #' High-level function to control pathway analysis.
 #'
-#' #' @param pathways_tab A data.frame of pathways defined by genes in the pathway.
+#' @param pathways_tab A data.frame of pathways defined by genes in the pathway.
 #' First column name should be 'Pathway_name', second should be 'Pathway_description', all others should
 #' be 'Gene1', 'Gene2', etc. Use NA to fill blanks.
 #' @param pathways_tab_fname The name of a file formatted in the manner described by pathways_tab.
