@@ -103,6 +103,10 @@ of each single gene.}
 \item{gene_sig_tab_fname}{The name of a file formatted in the manner described by gene_sig_tab.
 You only need to specify one of gene_sig_tab or gene_sig_tab_fname.}
 
+\item{pathways_tab}{A data.frame of pathways defined by genes in the pathway.
+First column name should be 'Pathway_name', second should be 'Pathway_description', all others should
+be 'Gene1', 'Gene2', etc. Use NA to fill blanks.}
+
 \item{pathways_tab_fname}{The name of a file formatted in the manner described by pathways_tab.
 You only need to specify either pathways_tab or pathways_tab_fname.}
 
@@ -172,9 +176,7 @@ be [out_name_root]_S[Snum]_[aID].txt.}
 Basically the same as run_pathwayanal.R with an additional outside loop to control
 leaving out k genes.
 
-#' @param pathways_tab A data.frame of pathways defined by genes in the pathway.
-First column name should be 'Pathway_name', second should be 'Pathway_description', all others should
-be 'Gene1', 'Gene2', etc. Use NA to fill blanks.
+High-level function to control pathway analysis.
 }
 \examples{
 
