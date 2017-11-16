@@ -9,6 +9,7 @@
 #' allow you to ensure that your pruned files do not overwrite each other if you have many jobs running at once.
 #' @param aID The pruned file will be name S[Snum]_[aID].prune.out. The Snum and aID parameters
 #' allow you to ensure that your pruned files do not overwrite each other if you have many jobs running at once.
+#' @param part For run_pathwayanal_part.R the name will be S[Snum]_[aID]_[part].prune.out. Default is NULL.
 #' @param fname_root The root of our .ped and .info files downloaded from 1000G, used to remove them at the end.
 #' @param prune_R2 Prune all SNPs that have pairwise correlation greater than this threshold.
 #' @param temp_Gmat The genotypes of the SNPs, will remove columns in accordance with PLINK pruning.
@@ -22,11 +23,19 @@
 #'
 #' @examples
 
-prune_snps <- function(Snum, aID, fname_root, prune_R2, temp_Gmat, temp_Gmat_record, checkpoint)
+prune_snps <- function(Snum, aID, part=NULL, fname_root, prune_R2, temp_Gmat, temp_Gmat_record, checkpoint)
 {
     # Pruned outfile file name.
-    prune_root <- paste('S', Snum, '_', aID, sep='')
-    prune_out_name <- paste(prune_root, '.prune.out', sep='')
+    if (is.null(part)) {
+        prune_root <- paste('S', Snum, '_', aID, sep='')
+        prune_out_name <- paste(prune_root, '.prune.out', sep='')
+        rm_prune_name <- paste(prune_root, c('.log', '.nosex', '.prune.in', '.prune.out'), sep='')
+    } else {
+        prune_root <- paste('S', Snum, '_', aID, '_', part, sep='')
+        prune_out_name <- paste(prune_root, '.prune.out', sep='')
+        rm_prune_name <- paste(prune_root, c('.log', '.nosex', '.prune.in', '.prune.out'), sep='')
+    }
+
 
     # Get prune list in plink
     system2(command='./plink', args=c('--noweb', '--file', fname_root, '--indep-pairwise',
@@ -68,7 +77,6 @@ prune_snps <- function(Snum, aID, fname_root, prune_R2, temp_Gmat, temp_Gmat_rec
     }
 
     #  Remove prune files
-    rm_prune_name <- paste('S', Snum, '_', aID, '.', c('log', 'nosex', 'prune.in', 'prune.out'), sep='')
     system2(command='rm', args=rm_prune_name)
     system2(command='sleep', args=c(2))
 
