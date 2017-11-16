@@ -135,6 +135,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     # Build the projection matrix
     evec_cols_to_use <- paste('PC', 1:num_PCs_use, sep='')
     X_mat <- as.matrix( subset(evecs_tab, select=evec_cols_to_use) )
+    X_mat <- cbind(1, X_mat)  
     W_mat <- diag(x=1, nrow=nrow(evecs_tab), ncol=nrow(evecs_tab))
     P_mat <- tryCatch(W_mat - X_mat %*% solve(t(X_mat) %*% X_mat) %*% t(X_mat),
                       warning=function(w) w, error=function(e) e)
@@ -232,7 +233,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     if (length(which(must_have_columns %in% colnames(SS_file))) != length(must_have_columns)) {
         stop('Your SS_file does not have all the required columns: ', must_have_columns)
     }
-    if (class(SS_file)[1] != 'data.table') {
+    if (class(SS_file)[1] != 'data.table' & class(SS_file)[1] != 'data.frame') {
         stop('SS_file must be a data.frame')
     }
 
