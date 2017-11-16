@@ -4,8 +4,8 @@
 \alias{prune_snps}
 \title{prune_snps.R}
 \usage{
-prune_snps(Snum, aID, fname_root, prune_R2, temp_Gmat, temp_Gmat_record,
-  checkpoint)
+prune_snps(Snum, aID, part = NULL, fname_root, prune_R2, temp_Gmat,
+  temp_Gmat_record, checkpoint)
 }
 \arguments{
 \item{Snum}{The pruned file will be name S[Snum]_[aID].prune.out. The Snum and aID parameters
@@ -13,6 +13,8 @@ allow you to ensure that your pruned files do not overwrite each other if you ha
 
 \item{aID}{The pruned file will be name S[Snum]_[aID].prune.out. The Snum and aID parameters
 allow you to ensure that your pruned files do not overwrite each other if you have many jobs running at once.}
+
+\item{part}{For run_pathwayanal_part.R the name will be S[Snum]_[aID]_[part].prune.out. Default is NULL.}
 
 \item{fname_root}{The root of our .ped and .info files downloaded from 1000G, used to remove them at the end.}
 
