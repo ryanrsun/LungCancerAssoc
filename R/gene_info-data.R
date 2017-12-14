@@ -10,14 +10,14 @@
 #'
 #' @docType data
 #'
-#' @usage data(ensembl_hg19_oct17)
+#' @usage data(ensembl_refgene_hg19_20171206)
 #'
 #' @format A data table with the transcription start/stop point for >48,000 genes.
 #'
 #' @keywords datasets
 #'
 #' @examples
-#' data(ensembl_hg19_oct17)
-#' FGFR2_row <- which(ensembl_hg19_oct17$HGNC_name == 'FGFR2')
-#' print(ensembl_hg19_oct17[FGFR2_row, ])
-"ensembl_hg19_oct17"
+#' data(ensembl_refgene_hg19_20171206)
+#' FGFR2_row <- which(ensembl_refgene_hg19_20171206$HGNC_name == 'FGFR2')
+#' print(ensembl_refgene_hg19_20171206[FGFR2_row, ])
+"ensembl_refgene_hg19_20171206"

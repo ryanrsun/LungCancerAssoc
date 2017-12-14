@@ -178,8 +178,8 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     # Use the fname only if table not provided.
     # If neither fname not table provided, use the one in LungCancerAssoc/data
     if (is.null(gene_tab) & is.null(gene_tab_fname)) {
-        data(ensembl_hg19_oct17)
-        gene_tab <- ensembl_hg19_oct17
+        data(ensembl_refgene_hg19_20171206)
+        gene_tab <- ensembl_refgene_hg19_20171206
         colnames(gene_tab) <- c('Ensembl_name', 'CHR', 'Strand', 'Start', 'End',
                                 'cdsStart', 'cdsEnd', 'num_exons', 'Gene', 'Notes')
     } else {
