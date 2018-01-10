@@ -1,12 +1,11 @@
 Package: LungCancerAssoc
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Pathway Analysis Using Summary Statistics
+Version: 0.2.0
+Author: Ryan Sun
+Maintainer: Ryan Sun <ryansun.work@gmail.com>
+Description: Perform pathway analysis using GWAS or WGS summary statistics. Packed with gene list and pathway list. Assumes you have a reference panel of genotypes for LD estimation.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Suggests:
