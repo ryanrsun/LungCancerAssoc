@@ -135,7 +135,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     # Build the projection matrix
     evec_cols_to_use <- paste('PC', 1:num_PCs_use, sep='')
     X_mat <- as.matrix( subset(evecs_tab, select=evec_cols_to_use) )
-    X_mat <- cbind(1, X_mat)  
+    X_mat <- cbind(1, X_mat)
     W_mat <- diag(x=1, nrow=nrow(evecs_tab), ncol=nrow(evecs_tab))
     P_mat <- tryCatch(W_mat - X_mat %*% solve(t(X_mat) %*% X_mat) %*% t(X_mat),
                       warning=function(w) w, error=function(e) e)
@@ -178,13 +178,17 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
     # Use the fname only if table not provided.
     # If neither fname not table provided, use the one in LungCancerAssoc/data
     if (is.null(gene_tab) & is.null(gene_tab_fname)) {
-        data(ensembl_refgene_hg19_20171206)
-        gene_tab <- ensembl_refgene_hg19_20171206
-        colnames(gene_tab) <- c('Ensembl_name', 'CHR', 'Strand', 'Start', 'End',
-                                'cdsStart', 'cdsEnd', 'num_exons', 'Gene', 'Notes')
+        data(ensembl_refgene_hg19_20180109)
+        gene_tab <- ensembl_refgene_hg19_20180109
+        colnames(gene_tab) <- c('Transcript_ID', 'CHR', 'Strand', 'Start', 'End',
+                                'cdsStart', 'cdsEnd', 'num_exons', 'Gene', 'Gene_ID', 'Notes')
+
+        # Just get rid of the duplicates now, why keep them?
+        gene_tab <- gene_tab[which(gene_tab$Notes <= 1), ]
+        if (nrow(gene_tab) != 49132) {stop('Did you change the default gene table recently?')}
     } else {
         if (is.null(gene_tab)) {
-            gene_tab <- tryCatch(data.table::fread(gene_tab_fname, header=T),
+            gene_tab <- tryCatch(data.table::fread(gene_tab_fname, data.table=F, header=T),
                             warning=function(w) w, error=function(e) e)
 
             if (class(gene_tab)[1] != 'data.frame') {

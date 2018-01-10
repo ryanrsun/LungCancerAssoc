@@ -1,4 +1,4 @@
-#' Hg19 Gene table using mostly Ensembl annotations
+#' Hg19 Gene table using mostly Ensembl (v90) annotations
 #'
 #' See make_ensembl_gene_list.R for information on how we created this table.
 #' There are a small number (17) of genes with N/A chromosome - that's just how
@@ -10,14 +10,14 @@
 #'
 #' @docType data
 #'
-#' @usage data(ensembl_refgene_hg19_20171206)
+#' @usage data(ensembl_refgene_hg19_20180109)
 #'
 #' @format A data table with the transcription start/stop point for >48,000 genes.
 #'
 #' @keywords datasets
 #'
 #' @examples
-#' data(ensembl_refgene_hg19_20171206)
-#' FGFR2_row <- which(ensembl_refgene_hg19_20171206$HGNC_name == 'FGFR2')
-#' print(ensembl_refgene_hg19_20171206[FGFR2_row, ])
-"ensembl_refgene_hg19_20171206"
+#' data(ensembl_refgene_hg19_20180109)
+#' FGFR2_row <- which(ensembl_refgene_hg19_20180109$HGNC_name == 'FGFR2')
+#' print(ensembl_refgene_hg19_20180109[FGFR2_row, ])
+"ensembl_refgene_hg19_20180109"
