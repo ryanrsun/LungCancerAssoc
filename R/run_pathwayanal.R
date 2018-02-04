@@ -178,7 +178,7 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                 map_file <- init_data_list$map_file
 
                 # Keep only the SNPs that are in summary stats file
-                matched_data_list <- match_ped_summary(SS_fname_root=SS_fname_root, fname_root=fname_root, ped_file=ped_file,
+                matched_data_list <- match_ped_summary(SS_file=SS_file, SS_fname_root=SS_fname_root, fname_root=fname_root, ped_file=ped_file,
                                                        map_file=map_file, CHR=CHR, start_bp=start_bp, end_bp=end_bp,
                                                        gene_name=gene_name, threshold_1000G=threshold_1000G, checkpoint=checkpoint)
 

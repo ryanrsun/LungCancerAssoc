@@ -26,15 +26,18 @@
 #' @examples
 #'
 
-match_ped_summary <- function(SS_fname_root, fname_root, ped_file, map_file, CHR, start_bp, end_bp, gene_name, threshold_1000G, checkpoint)
+match_ped_summary <- function(SS_file, SS_fname_root, fname_root, ped_file, map_file, CHR, start_bp, end_bp, gene_name, threshold_1000G, checkpoint)
 {
+    # If only the SS file name is provided
+    if (is.null(SS_file)) {
+        # Open summary stats file
+        SS_fname <- paste(SS_fname_root, CHR, '.txt', sep='')
 
-    # Open summary stats file
-    SS_fname <- paste(SS_fname_root, CHR, '.txt', sep='')
+        # Got rid of the tryCatch here because we were getting some loss of accuracy messages,
+        # so make sure these files all exist.
+        SS_file <- suppressWarnings(fread(SS_fname, header=T, showProgress=FALSE))
+    }
 
-    # Got rid of the tryCatch here because we were getting some loss of accuracy messages,
-    # so make sure these files all exist.
-    SS_file <- suppressWarnings(fread(SS_fname, header=T, showProgress=FALSE))
 
     # Do we have any summary statistics in our region?
     SS_rows <- which(SS_file$Chr==CHR & SS_file$BP>=start_bp & SS_file$BP<=end_bp)
@@ -64,7 +67,9 @@ match_ped_summary <- function(SS_fname_root, fname_root, ped_file, map_file, CHR
     {
         # Can we find the SNP in the summary stats file?
         temp_rs <- as.character(map_file$RS[snp_it])
-        summary_row <- which(temp_SS$RS == temp_rs)
+        temp_chr <- as.numeric(as.character(map_file$Chr[snp_it]))
+        temp_bp <- as.numeric(as.character(map_file$BP[snp_it]))
+        summary_row <- which(temp_SS$Chr == temp_chr & temp_SS$BP == temp_bp)
 
         if ( length(summary_row) == 1)								# Exists in summary stat file
         {
