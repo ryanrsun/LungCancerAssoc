@@ -185,7 +185,7 @@ check_inputs <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
 
         # Just get rid of the duplicates now, why keep them?
         gene_tab <- gene_tab[which(gene_tab$Notes <= 1), ]
-        if (nrow(gene_tab) != 49132) {stop('Did you change the default gene table recently?')}
+        if (nrow(gene_tab) != 46477) {stop('Did you change the default gene table recently?')}
     } else {
         if (is.null(gene_tab)) {
             gene_tab <- tryCatch(data.table::fread(gene_tab_fname, data.table=F, header=T),
