@@ -190,9 +190,14 @@ run_pathwayanal <- function(pathways_tab=NULL, pathways_tab_fname=NULL,
                 temp_Gmat_record <- matched_data_list$temp_Gmat_record
 
                 # LD pruning in PLINK
-                pruned_list <- prune_snps(Snum=Snum, aID=aID, fname_root=fname_root, prune_R2=prune_R2,
-                                          temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record,
-                                          checkpoint=checkpoint)
+                if (prune_R2 < 1) {
+                    pruned_list <- prune_snps(Snum=Snum, aID=aID, fname_root=fname_root, prune_R2=prune_R2,
+                                              temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record,
+                                              checkpoint=checkpoint)
+                } else {
+                    pruned_list <- list(temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record)
+                }
+
                 # Append every gene's results
                 if (is.null(combined_Gmat))
                 {
