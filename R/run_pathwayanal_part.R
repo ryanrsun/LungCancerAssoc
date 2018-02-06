@@ -194,7 +194,7 @@ run_pathwayanal_part <- function(part=NULL, pathways_tab=NULL, pathways_tab_fnam
                 map_file <- init_data_list$map_file
 
                 # Keep only the SNPs that are in summary stats file
-                matched_data_list <- match_ped_summary(SS_fname_root=SS_fname_root, fname_root=fname_root, ped_file=ped_file,
+                matched_data_list <- match_ped_summary(SS_file=SS_file, SS_fname_root=SS_fname_root, fname_root=fname_root, ped_file=ped_file,
                                                        map_file=map_file, CHR=CHR, start_bp=start_bp, end_bp=end_bp,
                                                        gene_name=gene_name, threshold_1000G=threshold_1000G, checkpoint=checkpoint)
 
@@ -207,9 +207,14 @@ run_pathwayanal_part <- function(part=NULL, pathways_tab=NULL, pathways_tab_fnam
 
                 # LD pruning in PLINK
                 # For partial jobs, need to give it the part variable!
-                pruned_list <- prune_snps(Snum=Snum, aID=aID, part=part, fname_root=fname_root, prune_R2=prune_R2,
-                                          temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record,
-                                          checkpoint=checkpoint)
+                if (prune_R2 < 1) {
+                    pruned_list <- prune_snps(Snum=Snum, aID=aID, part=part, fname_root=fname_root, prune_R2=prune_R2,
+                                              temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record,
+                                              checkpoint=checkpoint)
+                } else {
+                    pruned_list <- list(temp_Gmat=temp_Gmat, temp_Gmat_record=temp_Gmat_record)
+                }
+
                 # Append every gene's results
                 if (is.null(combined_Gmat))
                 {
